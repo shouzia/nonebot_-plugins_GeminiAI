@@ -1,6 +1,6 @@
 # NoneBot_Google_Gemini_AI插件
 
-1.使用前先去生气Gemini_API的Key
+1.使用前先去申请Gemini_API的Key
 [申请地址GeminiAPI地址](https://makersuite.google.com/app/apikey?hl=zh-cn)
 
 2.在`__init__.py`中修改Key
