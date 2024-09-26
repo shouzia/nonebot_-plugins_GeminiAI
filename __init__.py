@@ -1,12 +1,22 @@
 import os
+from typing import Tuple
 import google.generativeai as genai
 from nonebot import on_message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from nonebot.rule import to_me
 from nonebot.plugin import PluginMetadata
+
+
+from zhenxun.configs.config import Config
+from zhenxun.configs.path_config import TEMP_PATH
+from zhenxun.configs.utils import PluginExtraData, RegisterConfig
+from zhenxun.services.log import logger
+from zhenxun.utils.http_utils import AsyncHttpx
+from zhenxun.utils.message import MessageUtils
+from zhenxun.utils.withdraw_manage import WithdrawManager
 # 设置 Google Generative AI 的 API Key
 # XXXXXXXXXXXXXXXXXXXXXXXXXXX 修改为你的 API Key
-os.environ['API_KEY'] = 'XXXXXXXXXXXXXXXXXXXXXXXXX'
+os.environ['API_KEY'] = 'XXXXXXXXXXXXXXXXXXXXXXXXXXX'
 genai.configure(api_key=os.environ['API_KEY'])
 
 # 插件的基本信息
@@ -29,30 +39,30 @@ __plugin_settings__ = {
 }
 
 
-# __plugin_meta__ = PluginMetadata(
-#     name="Google_Gemini_AI",
-#     description="使用 Google Generative AI 的 Nonebot 插件",
-#     usage="""
-#     @机器人 你的问题
-#     示例: @机器人 你的问题
-#     """.strip(),
-#     extra=PluginExtraData(
-#         author="shouzi",
-#         version="0.1",
-#         configs=[
-#             RegisterConfig(
-#                 key="WITHDRAW_COS_MESSAGE",
-#                 value=(0, 1),
-#                 help="自动撤回，参1：延迟撤回色图时间(秒)，0 为关闭 | 参2：监控聊天类型，0(私聊) 1(群聊) 2(群聊+私聊)",
-#                 default_value=(0, 1),
-#                 type=Tuple[int, int],
-#             ),
-#         ],
-#     ).dict(),
-# )
+__plugin_meta__ = PluginMetadata(
+    name="Google_Gemini_AI",
+    description="使用 Google Generative AI 的 Nonebot 插件",
+    usage="""
+    @机器人 你的问题
+    示例: @机器人 你的问题
+    """.strip(),
+    extra=PluginExtraData(
+        author="shouzi",
+        version="0.1",
+        configs=[
+            RegisterConfig(
+                key="WITHDRAW_AI_MESSAGE",
+                value=(0, 1),
+                help="自动撤回，参1：延迟撤回AI时间(秒)，0 为关闭 | 参2：监控聊天类型，0(私聊) 1(群聊) 2(群聊+私聊)",
+                default_value=(0, 1),
+                type=Tuple[int, int],
+            ),
+        ],
+    ).dict(),
+)
 
-# 初始化消息处理器，优先级设为100
-google_ai = on_message(rule=to_me(), priority=100)
+# 初始化消息处理器，优先级设为10
+google_ai = on_message(rule=to_me(), priority=10)
 
 @google_ai.handle()
 async def handle_message(bot: Bot, event: MessageEvent):
